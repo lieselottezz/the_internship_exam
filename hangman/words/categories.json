@@ -1,0 +1,12 @@
+{
+    "categories": [
+        {
+            "category_name": "Idol name",
+            "file_name": "idol_name.json"
+        },
+        {
+            "category_name": "Car brand",
+            "file_name": "car_brand.json"
+        }
+    ]
+}
