@@ -1,35 +1,36 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"encoding/json"
 	"math/rand"
 	"time"
+	"strconv"
 	s "strings"
 )
 
 // Categories struct (metadata for each category)
 type Categories struct {
-	Categories		[]Category		`json:"categories"`
+	Categories []Category `json:"categories"`
 }
 
 // Category struct
 type Category struct {
-	CategoryName	string			`json:"category_name"`
-	FileName		string			`json:"file_name"`
+	CategoryName string `json:"category_name"`
+	FileName     string `json:"file_name"`
 }
 
 // Words struct (a list of word)
 type Words struct {
-	Words 			[]Word 			`json:"words"`
+	Words []Word `json:"words"`
 }
 
 // Word struct
 type Word struct {
-	Word			string			`json:"word"`
-	Hint			string			`json:"hint"`
+	Word string `json:"word"`
+	Hint string `json:"hint"`
 }
 
 func main() {
@@ -39,12 +40,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
-	var index int
-	fmt.Printf("> ")
-	fmt.Scan(&index)
-	categoryFilename := getCategoryFile(categories, index)
-	words, err := getWordlistFromFile(categoryFilename)
+	
+	words, err := selectCategory(categories)
 
 	if err != nil {
 		fmt.Println(err)
@@ -54,6 +51,77 @@ func main() {
 	randIndex := randomNumber(len(words.Words))
 	word, hint := words.Words[randIndex].Word, words.Words[randIndex].Hint
 	play(word, hint)
+}
+
+// Main process for running the game
+func play(word string, hint string) {
+
+	// Initialize basic parameters
+	life, score := 10, 0
+	var guessed []string
+	var wrongGuessList []string
+	displayWord := createDisplayWord(word)
+	wordLowercase := s.ToLower(word)
+	fmt.Printf("Hint: \"%s\"\n", hint)
+	
+	// Initialize game process
+	for life > 0 && containsInSlice(displayWord, "_") {
+
+		if life == 10 {
+			fmt.Printf("%v    Score %d, remaining wrong guess %d\n", displayWord, score, life)
+		} else {
+			fmt.Printf("%v    Score %d, remaining wrong guess %d, wrong guessed: %v\n", displayWord, score, life, wrongGuessList)
+		}
+
+		// Get the input character
+		var guessChar string
+		fmt.Printf("Please enter one character to guess\n> ")
+		fmt.Scanln(&guessChar)
+		guessChar = s.ToLower(guessChar)
+
+		// Validate character input
+		if !isAlpha(guessChar) || len(guessChar) != 1{
+			fmt.Println("The input is invalid. Please enter a new one.")
+			continue
+		}
+
+		if containsInSlice(guessed, guessChar) {
+			fmt.Println("The input character has guessed already")
+			continue
+		}
+
+		// Append a used character into the slice
+		guessed = append(guessed, guessChar)
+		
+		// Compare between the input character and the answer
+		if s.Contains(wordLowercase, guessChar) {
+			numberOfChar := s.Count(wordLowercase, guessChar)
+			fmt.Printf("\"%s\" is in the word\n%d point for the correct guess !!\n", guessChar, 15*numberOfChar)
+			if numberOfChar == 1{
+				index := s.Index(wordLowercase, guessChar)
+				displayWord[index] = string(word[index])
+			} else {
+				for i, element := range wordLowercase {
+					if string(element) == guessChar {
+						displayWord[i] = string(word[i])
+					}
+				}
+			}
+			score += 15 * numberOfChar
+		} else {
+			fmt.Printf("\"%s\" isn't in the word\n-10 point for the incorrect guess\n", guessChar)
+			wrongGuessList = append(wrongGuessList, guessChar)
+			life--
+			score -= 10
+		}
+	}
+
+	// Check the status of completing the game
+	if life == 0 {
+		fmt.Printf("Game over\nThe answer is \"%s\"\n", word)
+	} else {
+		fmt.Printf("Congratulation !!\nThe answer is \"%s\"\nYour score: %d\n", word, score)
+	}
 }
 
 // Get metadata for each category
@@ -81,11 +149,26 @@ func getCategoryFile(categories Categories, index int) string {
 		fmt.Printf("%d: %s\n", i+1, categories.Categories[i].CategoryName)
 	}
 
-	// selectedCategoryName := categories.Categories[index-1].CategoryName
-	// selectedCategoryFilename := categories.Categories[index-1].FileName
-	// fmt.Printf("The selected category is %d : %s\n", index, selectedCategoryName)
-
 	return categories.Categories[index-1].FileName
+}
+
+// Select category from the list
+func selectCategory(categories Categories) (Words, error) {
+	var index string
+	var words Words
+	var err error
+	for true {
+		fmt.Printf("Enter a number to select the category\n> ")
+		fmt.Scan(&index)
+		indexInt, _ := strconv.Atoi(index)
+		if indexInt >= 1 && indexInt <= len(categories.Categories) {
+			categoryFilename := getCategoryFile(categories, indexInt)
+			words, err = getWordlistFromFile(categoryFilename)
+			break
+		}
+		fmt.Println("Invalid input, Please try again")
+	}
+	return words, err
 }
 
 // Get word list from JSON file
@@ -104,13 +187,8 @@ func randomNumber(length int) int {
 	return rand.Intn(length)
 }
 
-// Main process for running the game
-func play(word string, hint string) {
-
-	// Init basic parameters
-	life, score := 10, 0
-	var guessed []string
-	var wrongGuessList []string
+// Create a slice of underscore to display the word within a length of the word
+func createDisplayWord(word string) []string {
 	var displayWord []string
 
 	for i := 0; i < len(word); i++ {
@@ -122,65 +200,11 @@ func play(word string, hint string) {
 		}
 	}
 
-	wordLowercase := s.ToLower(word)
-	
-	fmt.Printf("Hint: \"%s\"\n", hint)
-	
-	for life > 0 && containsInSlice(displayWord, "_") {
-
-		if life == 10 {
-			fmt.Printf("%v    Score %d, remaining wrong guess %d\n", displayWord, score, life)
-		} else {
-			fmt.Printf("%v    Score %d, remaining wrong guess %d, wrong guessed: %v\n", displayWord, score, life, wrongGuessList)
-		}
-
-		var guessChar string
-		fmt.Printf("Please enter one character to guess\n> ")
-		fmt.Scanln(&guessChar)
-		guessChar = s.ToLower(guessChar)
-
-		if !isAlpha(guessChar) || len(guessChar) != 1{
-			fmt.Println("The input is invalid. Please enter a new one.")
-			continue
-		}
-
-		if containsInSlice(guessed, guessChar) {
-			fmt.Println("The input character has guessed already")
-			continue
-		}
-
-		guessed = append(guessed, guessChar)
-		
-		if s.Contains(wordLowercase, guessChar) {
-			numberOfChar := s.Count(wordLowercase, guessChar)
-			fmt.Printf("%s is in the word\n%d point for corrected guess !!\n", guessChar, 15*numberOfChar)
-			if numberOfChar == 1{
-				index := s.Index(wordLowercase, guessChar)
-				displayWord[index] = string(word[index])
-			} else {
-				for i, element := range wordLowercase {
-					if string(element) == guessChar {
-						displayWord[i] = string(word[i])
-					}
-				}
-			}
-			score += 15 * numberOfChar
-
-		} else {
-			fmt.Printf("%s isn't in the word\n", guessChar)
-			wrongGuessList = append(wrongGuessList, guessChar)
-			life--
-			score -= 10
-		}
-	}
-	if life == 0 {
-		fmt.Printf("Game over\nThe answer is \"%s\"\n", word)
-	} else {
-		fmt.Printf("Congratulation !!\nThe answer is \"%s\"\nYour score: %d\n", word, score)
-	}
+	return displayWord
 }
 
-// ref: https://gist.github.com/ammario/d61fb67d15077343e3dd17f2113e4c4b
+// Ref: https://gist.github.com/ammario/d61fb67d15077343e3dd17f2113e4c4b
+// Return true if string is alphabet
 func isAlpha(str string) bool {
 	for i := range str {
 		if str[i] < 'A' || str[i] > 'z' {
@@ -192,7 +216,8 @@ func isAlpha(str string) bool {
 	return true
 }
 
-// ref: https://programming.guide/go/find-search-contains-slice.html
+// Ref: https://programming.guide/go/find-search-contains-slice.html
+// Return true if element is in the slice 
 func containsInSlice(a []string, x string) bool {
 	for _, n := range a {
 		if x == n {

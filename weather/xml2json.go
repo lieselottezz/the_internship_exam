@@ -1,4 +1,4 @@
-package weather
+package main
 
 import (
 	"fmt"
@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	arg := os.Args
 
 	// Check if the number of argument is matched to requirements
@@ -26,7 +25,6 @@ func main() {
 
 // Get filename from CLI argument then parse map and JSON
 func parsingXMLToJSON(filename string) string{
-
 	file, err := os.Open(filename) // Open file with permission
 	if err != nil {
 		return "Failed to convert XML to JSON\n" + err.Error()
