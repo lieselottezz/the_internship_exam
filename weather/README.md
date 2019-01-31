@@ -21,7 +21,8 @@ go build xml2json.go
 ```
 &nbsp; &nbsp; &nbsp; Then run the executable file by using
 ```
-./xml2json $name_of_xml.xml
+./xml2json $name_of_xml.xml  // for unix
+xml2json $name_of_xml.xml    // for windows
 ```
 4. The JSON file will appear in the same directory with xml2json.go
 
