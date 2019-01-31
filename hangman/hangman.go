@@ -40,7 +40,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	
+
 	words, err := selectCategory(categories)
 
 	if err != nil {
@@ -62,7 +62,7 @@ func play(word string, hint string) {
 	var wrongGuessList []string
 	displayWord := createDisplayWord(word)
 	wordLowercase := s.ToLower(word)
-	fmt.Printf("Hint: \"%s\"\n", hint)
+	fmt.Printf("\nHint: \"%s\"\n\n", hint)
 	
 	// Initialize game process
 	for life > 0 && containsInSlice(displayWord, "_") {
@@ -141,17 +141,6 @@ func getIndexCategory() (Categories, error) {
 	return categories, err
 }
 
-// Get a category by index
-func getCategoryFile(categories Categories, index int) string {
-	fmt.Println("Select Category:")
-
-	for i := 0; i < len(categories.Categories); i++ {
-		fmt.Printf("%d: %s\n", i+1, categories.Categories[i].CategoryName)
-	}
-
-	return categories.Categories[index-1].FileName
-}
-
 // Select category from the list
 func selectCategory(categories Categories) (Words, error) {
 	var index string
@@ -162,7 +151,7 @@ func selectCategory(categories Categories) (Words, error) {
 		fmt.Scan(&index)
 		indexInt, _ := strconv.Atoi(index)
 		if indexInt >= 1 && indexInt <= len(categories.Categories) {
-			categoryFilename := getCategoryFile(categories, indexInt)
+			categoryFilename := categories.Categories[indexInt-1].FileName
 			words, err = getWordlistFromFile(categoryFilename)
 			break
 		}
@@ -181,6 +170,7 @@ func getWordlistFromFile(filename string) (Words, error) {
 	return words, err
 }
 
+// Ref: https://flaviocopes.com/go-random/
 // Random number with random seed value
 func randomNumber(length int) int {
 	rand.Seed(time.Now().UnixNano())

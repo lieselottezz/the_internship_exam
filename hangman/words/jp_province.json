@@ -1,0 +1,24 @@
+{
+    "words": [
+        {
+            "word": "Shizuoka",
+            "hint": "Where is Fuji mountain"
+        },
+        {
+            "word": "Hokkaido", 
+            "hint": "At the top of Japan"
+        },
+        {
+            "word": "Kyoto", 
+            "hint": "Fushimi Inari"
+        },
+        {
+            "word": "Osaka", 
+            "hint": "NMB"
+        },
+        {
+            "word": "Fukuoka",
+            "hint": "HKT"
+        }
+    ]
+}

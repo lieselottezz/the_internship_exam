@@ -1,12 +1,16 @@
 {
     "categories": [
         {
-            "category_name": "Idol name",
-            "file_name": "idol_name.json"
+            "category_name": "Famous places in Thailand",
+            "file_name": "th_places.json"
         },
         {
-            "category_name": "Car brand",
-            "file_name": "car_brand.json"
+            "category_name": "Japanese animation name",
+            "file_name": "anime_name.json"
+        },
+        {
+            "category_name": "Province of Japan",
+            "file_name": "jp_province.json"
         }
     ]
 }
