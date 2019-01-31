@@ -2,14 +2,12 @@
 Parsing XML to JSON with Golang
 
 ### How to use
-1. Install Golang
-    - https://golang.org/doc/install
-2. Install library
+1. Install library
 ```
 go get github.com/clbanning/mxj
 ```
-3. The XML file must be in same directory with xml2json.go
-4. Run the source code in the command line by using
+2. The XML file must be in same directory with xml2json.go
+3. Run the source code in the command line by using
 ```
 go run xml2json.go $name_of_xml.xml
 ```
@@ -25,7 +23,7 @@ go build xml2json.go
 ```
 ./xml2json $name_of_xml.xml
 ```
-5. The JSON file will appear in the same directory with xml2json.go
+4. The JSON file will appear in the same directory with xml2json.go
 
 ### References
 - Trim suffix from filename
