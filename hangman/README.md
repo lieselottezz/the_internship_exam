@@ -7,13 +7,14 @@ Run the game by using
 ```
 go run hangman.go
 ```
-- Or build it with the source code
+Or build it with the source code
 ```
 go build hangman.go
 ```
-- Then run the execuable file
+Then run the execuable file
 ```
-./hangman
+./hangman    // for unix
+hangman      // for windows
 ```
 
 You can try one of three categories of words in the game
