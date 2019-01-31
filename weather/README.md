@@ -11,15 +11,15 @@ go get github.com/clbanning/mxj
 ```
 go run xml2json.go $name_of_xml.xml
 ```
-  - For example
+&nbsp; &nbsp; &nbsp; For example
 ```
 go run xml2json.go weather.xml
 ```
-  - Or build from the source code
+&nbsp; &nbsp; &nbsp; Or build from the source code
 ```
 go build xml2json.go
 ```
-  - Then run the executable file by using
+&nbsp; &nbsp; &nbsp; Then run the executable file by using
 ```
 ./xml2json $name_of_xml.xml
 ```
